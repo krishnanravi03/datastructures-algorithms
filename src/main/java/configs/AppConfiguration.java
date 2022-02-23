@@ -1,11 +1,11 @@
 package configs;
 
+import com.datastructures.App;
+
 public final class AppConfiguration {
-    
-    private static String filesLoaction = "./src/files";
 
-    public static String dictionary = filesLoaction + "/dictionary.txt";
+    public static String dictionary = AppConfiguration.class.getClassLoader().getResource("dictionary.txt").toString();
 
-    public static String map = filesLoaction + "/assn9_data.csv";
+    public static String map = AppConfiguration.class.getClassLoader().getResource("assn9_data.csv").toString();
     
 }

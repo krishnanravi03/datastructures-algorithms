@@ -1,8 +1,6 @@
 package projects;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +16,7 @@ public final class WordPuzzle {
 
     private static QuadraticProbingHashTable<String> _prefixTable = new QuadraticProbingHashTable<>();
     private static QuadraticProbingHashTable<String> _wordsTable = new QuadraticProbingHashTable<>();
+    private static int _maxWordLength = 0;
 
     public static List<String> run(){
         //Get User input
@@ -29,7 +28,7 @@ public final class WordPuzzle {
         return result;
     }
 
-    public static List<String> run(int rows, int columns){
+    public static List<String> run(int rows, int columns, boolean readFromFile){
         List<String> result = new ArrayList<String>();
         char[][] puzzle = GenerateWordPuzzle(rows, columns);
         result.add(PuzzletoString(puzzle));
@@ -68,7 +67,6 @@ public final class WordPuzzle {
         String currString = "";
         StringBuilder sb = new StringBuilder();
         PriorityQueue<String> foundWords = new PriorityQueue<>();
-        int maxWordLength = 0;
         int rows = puzzle.length;
         int columns = puzzle[0].length;
 
@@ -80,7 +78,7 @@ public final class WordPuzzle {
                 sb.setLength(0);
                 sb.append(puzzle[i][j]);
                 if(_prefixTable.contains(sb.toString())){
-                    for(int k = j+1; k<columns && sb.length() < maxWordLength; k++){
+                    for(int k = j+1; k<columns && sb.length() < _maxWordLength; k++){
                         sb.append(puzzle[i][k]);
                         currString = sb.toString();
                         if(!_prefixTable.contains(currString)){
@@ -94,7 +92,7 @@ public final class WordPuzzle {
                     
                     sb.setLength(1);
 
-                    for(int k = j-1; k>=0 && sb.length() < maxWordLength; k--){
+                    for(int k = j-1; k>=0 && sb.length() < _maxWordLength; k--){
                         sb.append(puzzle[i][k]);
                         currString = sb.toString();
 
@@ -109,7 +107,7 @@ public final class WordPuzzle {
 
                     sb.setLength(1);
 
-                    for(int k = i+1; k<rows && sb.length() < maxWordLength; k++){
+                    for(int k = i+1; k<rows && sb.length() < _maxWordLength; k++){
                         sb.append(puzzle[k][j]);
                         currString = sb.toString();
 
@@ -124,7 +122,7 @@ public final class WordPuzzle {
 
                     sb.setLength(1);
 
-                    for(int k = i-1; k>=0 && sb.length() < maxWordLength; k--){
+                    for(int k = i-1; k>=0 && sb.length() < _maxWordLength; k--){
                         sb.append(puzzle[k][j]);
                         currString = sb.toString();
 
@@ -139,7 +137,7 @@ public final class WordPuzzle {
 
                     sb.setLength(1);
 
-                    for(int k = 1; (i+k < rows && j+k < columns) && sb.length() < maxWordLength; k++){
+                    for(int k = 1; (i+k < rows && j+k < columns) && sb.length() < _maxWordLength; k++){
                         sb.append(puzzle[i+k][j+k]);
                         currString = sb.toString();
 
@@ -156,7 +154,7 @@ public final class WordPuzzle {
 
                     sb.setLength(1);
 
-                    for(int k = 1; (i-k >= 0 && j-k >= 0) && sb.length() < maxWordLength; k++){
+                    for(int k = 1; (i-k >= 0 && j-k >= 0) && sb.length() < _maxWordLength; k++){
                         sb.append(puzzle[i-k][j-k]);
                         currString = sb.toString();
 
@@ -173,7 +171,7 @@ public final class WordPuzzle {
 
                     sb.setLength(1);
 
-                    for(int k = 1; (i+k < rows && j-k >= 0) && sb.length() < maxWordLength; k++){
+                    for(int k = 1; (i+k < rows && j-k >= 0) && sb.length() < _maxWordLength; k++){
                         sb.append(puzzle[i+k][j-k]);
                         currString = sb.toString();
 
@@ -190,7 +188,7 @@ public final class WordPuzzle {
 
                     sb.setLength(1);
 
-                    for(int k = 1; (i-k >= 0 && j+k < columns) && sb.length() < maxWordLength; k++){
+                    for(int k = 1; (i-k >= 0 && j+k < columns) && sb.length() < _maxWordLength; k++){
                         sb.append(puzzle[i-k][j+k]);
                         currString = sb.toString();
 
@@ -210,7 +208,6 @@ public final class WordPuzzle {
 
         //QuadraticProbingHashTable<String> foundWordsSet = new QuadraticProbingHashTable<>();
         Set<String> foundWordsSet = new HashSet<>();
-        System.out.println("Found words: ");
         
         //Remove duplicates and single letter words
         while(!foundWords.isEmpty()){
@@ -248,17 +245,19 @@ public final class WordPuzzle {
 
     private static void refreshTablesFromDictionary(){
         // Project 3 code
-        int maxWordLength = 0, currWordLength;
+        int currWordLength;
         //File location
-        File file = new File(AppConfiguration.dictionary);
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream is = classloader.getResourceAsStream("dictionary.txt");
+        //File file = new File(AppConfiguration.dictionary);
         
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             String st;
             while ((st = reader.readLine()) != null) {
                 currWordLength = st.length();
                 _wordsTable.insert(st);
-                maxWordLength = Math.max(maxWordLength, currWordLength);
+                _maxWordLength = Math.max(_maxWordLength, currWordLength);
                 for (int i = 0; i <= currWordLength; i++) {
                     String prefix = st.substring(0, i);
                     _prefixTable.insert(prefix);
@@ -269,6 +268,7 @@ public final class WordPuzzle {
             System.out.println(ex);
         }
     }
+
 
 }
 
