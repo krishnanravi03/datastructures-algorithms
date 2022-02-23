@@ -17,3 +17,16 @@ This is run as a lambda function in AWS and exposed as an REST api through API g
 (https://github.com/krishnanravi03/datastructures-algorithms-ui).
 
 
+Navigation:
+Package descriptions:
+1. Algorithms - Kruskal's implementation.
+2. com/datastructures - Lambda handler.
+3. configs - resource and file paths.
+4. datastructures - implementation of all the datastructures.
+5. examples - Demonstration of all the implmentations and some functions of datastructures. This can take in user inputs/console inputs.
+6. helpers - some external classes and common functions used across other classes.
+7. Projects - Logic for maze/puzzle generation.
+
+This project can also be run as a stand-alone console app.
+Coded using Java 8, jdk 17
+
